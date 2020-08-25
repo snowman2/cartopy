@@ -11,10 +11,6 @@ import pickle
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_equal
 from numpy.testing import assert_array_almost_equal as assert_arr_almost_eq
-try:
-    import pyepsg
-except ImportError:
-    pyepsg = None
 import pytest
 import shapely.geometry as sgeom
 
@@ -53,7 +49,7 @@ class TestCRS:
 
         # results obtained by streetmap.co.uk.
         lat, lon = np.array([50.462023, -3.478831], dtype=np.double)
-        east, north = np.array([295131, 63511], dtype=np.double)
+        east, north = np.array([295132.1,  63512.6], dtype=np.double)
 
         # note the handling of precision here...
         assert_arr_almost_eq(np.array(osgb.transform_point(lon, lat, ll)),
@@ -75,20 +71,16 @@ class TestCRS:
     def test_osgb(self, approx):
         self._check_osgb(ccrs.OSGB(approx=approx))
 
-    @pytest.mark.network
-    @pytest.mark.skipif(pyepsg is None, reason='requires pyepsg')
     def test_epsg(self):
         uk = ccrs.epsg(27700)
         assert uk.epsg_code == 27700
-        assert_almost_equal(uk.x_limits, (-118365.7406176, 751581.5647514),
+        assert_almost_equal(uk.x_limits, (-118397.001,  751441.779),
                             decimal=3)
-        assert_almost_equal(uk.y_limits, (-5268.1704980, 1272227.7987656),
+        assert_almost_equal(uk.y_limits, (-5192.07, 1272149.35),
                             decimal=2)
-        assert_almost_equal(uk.threshold, 8699.47, decimal=2)
+        assert_almost_equal(uk.threshold, 8698.39, decimal=2)
         self._check_osgb(uk)
 
-    @pytest.mark.network
-    @pytest.mark.skipif(pyepsg is None, reason='requires pyepsg')
     def test_epsg_compound_crs(self):
         projection = ccrs.epsg(5973)
         assert projection.epsg_code == 5973
